@@ -10,7 +10,7 @@ class User extends Model {
 	const SESSION = "User";
 
 	protected $fields = [
-		"iduser", "idperson", "deslogin", "despassword", "inadmin", "dtergister"
+		"iduser", "idperson", "deslogin", "despassword", "inadmin", "dtregister", "desperson", "desemail", "nrphone"
 	];
 
 	public static function login($login, $password):User
@@ -70,6 +70,34 @@ class User extends Model {
 
 		}
 
+	}
+
+	public static function listAll()
+	{
+		$sql = new Sql();
+
+		return $sql->select("select * from tb_users a inner join tb_persons b on a.idperson = b.idperson order by b.desperson");
+	}
+
+	public function save()
+	{
+		$sql = new Sql();
+
+		$results = $sql->select("call sp_users_save(:desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
+			":desperson"=>$this->getdesperson(), //getdesperson chama function __call($name, $args) e divide get + desperson 
+			":deslogin"=>$this->getdeslogin(),
+			":despassword"=>$this->getdespassword(),
+			":desemail"=>$this->getdesemail(),
+			":nrphone"=>$this->getnrphone(),
+			":inadmin"=>$this->getinadmin()									
+		));
+
+		// Erro de Undefined offset. Solução: adicionar todos os campos em protected $fields que é do model em:
+		// if (in_array($fieldName, $this->fields))
+		//var_dump($results);
+		//exit;
+
+		$this->setData($results[0]);	
 	}
 
 }
