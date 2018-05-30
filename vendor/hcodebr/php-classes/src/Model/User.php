@@ -100,6 +100,43 @@ class User extends Model {
 		$this->setData($results[0]);	
 	}
 
+	public function get($iduser)
+	{
+		$sql = new Sql();
+
+		$results = $sql->select("select * from tb_users a inner join tb_persons b on a.idperson = b.idperson where a.iduser = :iduser", array(
+			":iduser"=>$iduser
+		));
+
+		$this->setData($results[0]);		
+	}
+
+	public function update()
+	{
+		$sql = new Sql();
+
+		$results = $sql->select("call sp_usersupdate_save(:iduser, :desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
+			":iduser"=>$this->getiduser(),
+			":desperson"=>$this->getdesperson(), //getdesperson chama function __call($name, $args) e divide get + desperson 
+			":deslogin"=>$this->getdeslogin(),
+			":despassword"=>$this->getdespassword(),
+			":desemail"=>$this->getdesemail(),
+			":nrphone"=>$this->getnrphone(),
+			":inadmin"=>$this->getinadmin()									
+		));
+
+		$this->setData($results[0]);			
+	}
+
+	public function delete()
+	{
+		$sql = new Sql();
+
+		$results = $sql->select("call sp_users_delete(:iduser)", array(
+			":iduser"=>$this->getiduser()
+		));
+	}
+
 }
 
  ?>
